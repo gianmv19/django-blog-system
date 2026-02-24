@@ -10,8 +10,8 @@
 
         <!-- Right side content -->
         <div class="col-md-9">
-            <h2>Edit Category</h2>
-            <form action="{% url 'add_category' %}" method="POST" style="width: 500px">
+            <h2>Add New Post</h2>
+            <form action="{% url 'add_post' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form | crispy }}
                 <button class="btn btn-warning w-100 margin-auto mb-2">Submit</button>
