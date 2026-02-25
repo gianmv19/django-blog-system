@@ -27,6 +27,8 @@ def posts_by_category(request, category_id):
 def blogs(request, slug):
     single_blog = get_object_or_404(Blog, slug=slug, status='Published')
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('login')
         comment = Comment()
         comment.user = request.user
         comment.blog = single_blog

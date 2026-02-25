@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, render
 
 from blogs.models import Blog, Category
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 from .forms import BlogPostForm, CategoryForm, AddUserForm, EditUserForm
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
-
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 @login_required(login_url='login')
@@ -22,7 +22,11 @@ def dashboard(request):
 
 @login_required(login_url='login')
 def categories(request):
-    return render(request, 'dashboard/categories.html')
+    categories = Category.objects.all()
+    context = {
+        'categories': categories,
+    }
+    return render(request, 'dashboard/categories.html', context)
 
 @login_required(login_url='login')
 def add_category(request):
@@ -31,7 +35,8 @@ def add_category(request):
         if form.is_valid():
             form.save()
             return redirect('categories')
-    form = CategoryForm()
+    else:
+        form = CategoryForm()
     context = {
         'form': form,
     }
@@ -45,7 +50,8 @@ def edit_category(request, pk):
         if form.is_valid():
             form.save()
             return redirect('categories')
-    form = CategoryForm(instance=category)
+    else:
+        form = CategoryForm(instance=category)
     context = {
         'form': form,
         'category': category,
@@ -53,6 +59,7 @@ def edit_category(request, pk):
     return render(request, 'dashboard/edit_category.html', context)
 
 @login_required(login_url='login')
+@require_POST
 def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     category.delete()
@@ -85,7 +92,8 @@ def add_post(request):
         else:
             print('form is invalid')
             print(form.errors)
-    form = BlogPostForm()
+    else:
+        form = BlogPostForm()
     context = {
         'form': form,
     }
@@ -108,7 +116,8 @@ def edit_post(request, pk):
             new_post.slug = slug
             new_post.save()
             return redirect('posts')
-    form = BlogPostForm(instance=post)
+    else:
+        form = BlogPostForm(instance=post)
     context = {
         'form': form,
         'post': post,
@@ -116,6 +125,7 @@ def edit_post(request, pk):
     return render(request, 'dashboard/edit_post.html', context)
 
 @login_required(login_url='login')
+@require_POST
 def delete_post(request, pk):
     post = get_object_or_404(Blog, pk=pk)
     post.delete()
@@ -138,12 +148,15 @@ def add_user(request):
             return redirect('users')
         else:
             print(form.errors)
-    form = AddUserForm()
+    else:
+        form = AddUserForm()
     context = {
         'form': form,
     }
     return render(request, 'dashboard/add_user.html', context)
 
+@login_required(login_url='login')
+@permission_required('auth.change_user', login_url='login')
 def edit_user(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
@@ -151,12 +164,16 @@ def edit_user(request, pk):
         if form.is_valid():
             form.save()
             return redirect('users')
-    form = EditUserForm(instance=user)
+    else:
+        form = EditUserForm(instance=user)
     context = {
         'form': form,
     }
     return render(request, 'dashboard/edit_user.html', context)
 
+@login_required(login_url='login')
+@permission_required('auth.delete_user', login_url='login')
+@require_POST
 def delete_user(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.delete()

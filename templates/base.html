@@ -33,7 +33,9 @@
             <a class="btn btn-sm btn-warning" href="{% url 'login' %}">Log in</a> &nbsp;
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'register' %}">Sign up</a>
             {% else %}
+            {% if user.is_staff %}
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'dashboard' %}">Dashboard</a>
+            {% endif %}
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}">Logout</a>
             {% endif %}
           </div>

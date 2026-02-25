@@ -25,9 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('category/', include('blogs.urls')),
+    path('blogs/search/', BlogsView.search, name='search'),
     path('blogs/<slug:slug>/', BlogsView.blogs, name='blogs'),
     # Search endpoint
-    path('blogs/search/', BlogsView.search, name='search'),
     path('signup/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),

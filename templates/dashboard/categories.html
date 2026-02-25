@@ -9,6 +9,7 @@
 
     <!-- Right side content -->
     <div class="col-md-9">
+    {% if perms.blogs.view_category %}
         <h2>All Categories</h2>
          <a href="{% url 'add_category' %}" class="btn btn-dark text-light w-50 margin-auto mb-2">Add New</a>
         <table class="table table-hover">
@@ -31,12 +32,19 @@
               <td>
                   <a href="{% url 'edit_category' cat.id %}"><i class="fa fa-edit text-success"></i></a>
                   &nbsp;
-                  <a href="{% url 'delete_category' cat.id %}"><i class="fa fa-trash text-danger"></i></a>
+                  <form action="{% url 'delete_category' cat.id %}" method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-link p-0" onclick="return confirm('Delete this category?')"><i
+                          class="fa fa-trash text-danger"></i></button>
+                  </form>
               </td>
             </tr>
           {% endfor %}
           </tbody>
         </table>
+    {% else %}
+    <h5>You do not have permission to view this page</h5>
+    {% endif %}
     </div>
 </div>
 {% endblock %}
